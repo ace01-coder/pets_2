@@ -3,6 +3,7 @@
 include('dbconn/config.php');
 include('dbconn/authentication.php');
 checkAccess('user');
+
 ?>
 
 <!DOCTYPE html>

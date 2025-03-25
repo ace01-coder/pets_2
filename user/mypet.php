@@ -240,6 +240,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
         </div>
         <div class="modal-body">
           <div class="row g-3">
+            <span id="adoptionStatus" style="margin-left:20px; font-size: 0.9rem;"></span>
+          </div>
+          <div class="row g-3">
             <div class="col-12 col-md-6 text-center">
               <img id="modalPetImage" src="" alt="Pet Image" class="img-fluid rounded border"
                    style="cursor:pointer;" onclick="openFullSize(this)">

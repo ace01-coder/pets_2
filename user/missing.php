@@ -2,6 +2,8 @@
 include('dbconn/config.php');
 include('dbconn/authentication.php');
 checkAccess('user'); 
+
+$userId = $_SESSION['user_id'];
 ?>
 
 <!DOCTYPE html>
