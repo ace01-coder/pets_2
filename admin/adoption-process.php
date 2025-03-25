@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pet_id']) && isset($_
         $stmt->execute();
         $stmt->close();
         // Redirect back with a success message (optional)
-        header("Location: adoption_list.php?success=Record processed successfully");
+        header("Location: adoption_approval_admin.php?success=Record processed successfully");
     } else {
         die("Error: " . $conn->error);
     }

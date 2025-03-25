@@ -101,7 +101,7 @@ checkAccess('admin');
                   
                   // Use pet_id as data-id attribute (make sure your DB uses that column)
                   echo "<tr data-id='{$row['pet_id']}' data-info='{$jsonData}'>
-                          <td>" . htmlspecialchars($row['owner']) . "</td>
+                          <td>" . htmlspecialchars($row['username']) . "</td>
                           <td><button class='btn btn-info' onclick='viewDetails(this)'>View</button></td>
                           <td>
                             <form action='adoption-process.php' method='POST' class='d-inline'>

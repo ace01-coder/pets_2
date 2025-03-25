@@ -128,7 +128,7 @@ checkAccess('admin');
                         <!-- Updated Header: White text with blue background -->
                         <div
                             class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                            <h4 class="mb-0 text-white">Register Management</h4>
+                            <h4 class="mb-0 text-white">Adoption Approval</h4>
                             <div class="d-flex">
                                 <div class="input-group me-2">
                                     <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
@@ -158,10 +158,7 @@ checkAccess('admin');
                                     <thead class="bg-primary text-white">
                                         <tr>
                                             <th>No.</th>
-                                            <th>Name</th>
-                                            <th>Phone</th>
-                                            <th>Email</th>
-                                            <th>Address</th>
+                                            <th>Owner</th>
                                             <th>Pet</th>
                                             <th>Age</th>
                                             <th>Breed</th>
@@ -197,9 +194,6 @@ checkAccess('admin');
                                                 echo "<tr>
                                                         <td>{$index}</td>
                                                         <td>{$row['username']}</td>
-                                                        <td>{$row['phone']}</td>
-                                                        <td>{$row['mail']}</td>
-                                                        <td>{$row['address']}</td>
                                                         <td>{$row['pet_name']}</td>
                                                         <td>{$row['pet_age']}</td>
                                                         <td>{$row['pet_breed']}</td>

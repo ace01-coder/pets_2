@@ -61,12 +61,12 @@ checkAccess('user');
                     ?>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div class="card shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#adoptModal"
-                            data-pet-id="<?php echo $row['id']; ?>"
+                            data-pet-id="<?php echo $row['pet_id']; ?>"
                             data-pet-name="<?php echo htmlspecialchars($row['pet_name']); ?>"
                             data-pet-breed="<?php echo htmlspecialchars($row['pet_breed']); ?>"
                             data-pet-info="<?php echo htmlspecialchars($row['pet_info']); ?>"
                             data-pet-image="<?php echo htmlspecialchars($row['pet_image']); ?>"
-                            data-owner-email="<?php echo htmlspecialchars($row['email']); ?>">
+                            data-owner-email="<?php echo htmlspecialchars($row['mail']); ?>">
                             <img src="<?php echo htmlspecialchars($row['pet_image']); ?>" class="card-img-top rounded-top"
                                 alt="Pet Image">
                             <div class="card-body">
@@ -102,7 +102,7 @@ checkAccess('user');
                             </div>
                             <div class="col-md-7">
                                 <h5 id="modal-pet-name"></h5>
-                                <p><strong>Type:</strong> <span id="modal-pet-type"></span></p>
+                                <!--<p><strong>Type:</strong> <span id="modal-pet-type"></span></p>-->
                                 <p><strong>Breed:</strong> <span id="modal-pet-breed"></span></p>
                                 <p><strong>Information:</strong> <span id="modal-pet-info"></span></p>
                             </div>

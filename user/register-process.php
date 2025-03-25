@@ -8,7 +8,7 @@
         $user_id    = $_SESSION['user_id'];
         $username   = $_SESSION['username'];
         // If you need the email, make sure it is stored in session too:
-        $user_email = isset($_SESSION['user_email']) ? $_SESSION['user_email'] : '';
+        $email = htmlspecialchars(trim($_POST['email']));
 
         // Get the rest of the pet data from the POST array
         $pet_name       = trim($_POST['pet_name']);
@@ -42,14 +42,14 @@
         $stmt->close();
 
         // Insert the pet record into the database
-        $insert_sql = "INSERT INTO pets (user_id, username, pet_name, pet_age, pet_type, pet_breed, pet_info, pet_image, vaccine_status) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insert_sql = "INSERT INTO pets (user_id, username, mail, pet_name, pet_age, pet_type, pet_breed, pet_info, pet_image, vaccine_status) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($insert_sql);
         if (!$stmt) {
             header('Location: register.php?error=Prepare error: ' . $conn->error);
             exit();
         }
-        $stmt->bind_param("ississsss", $user_id, $username, $pet_name, $pet_age, $pet_type, $pet_breed, $pet_info, $imageData, $vaccine_status);
+        $stmt->bind_param("isssisssss", $user_id, $username, $pet_name, $pet_age, $pet_type, $pet_breed, $pet_info, $imageData, $vaccine_status);
         
         if ($stmt->execute()) {
             $pet_id = $conn->insert_id;

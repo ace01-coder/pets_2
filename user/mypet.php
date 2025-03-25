@@ -3,6 +3,8 @@ include('dbconn/config.php');
 include('dbconn/authentication.php');
 checkAccess('user'); 
 
+$userId = $_SESSION['user_id'];
+
 $errorMessage = "";
 $successMessage = "";
 
@@ -15,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
     $petAge   = (int) $_POST['petAge'];
     $petBreed = trim($_POST['petBreed']);
     $petInfo  = trim($_POST['petInfo']);
-    // $mail is not used since it's not inserted in the adoption table
+    $mail     = trim($_POST['petMail']);
 
     // --- Handle Pet Image Upload (using file upload or Base64 string if provided) ---
     if (!empty($_FILES['petImage']['tmp_name'])) {
@@ -65,11 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
         try {
             // --- Insert into the adoption table (recording pet information) ---
             $queryAdoption = "INSERT INTO adoption 
-                (pet_id, username, pet_name, pet_age, pet_breed, pet_info, pet_image, approved) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+                (pet_id, username,mail, pet_name, pet_age, pet_breed, pet_info, pet_image, approved) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)";
             if ($stmtAdoption = $conn->prepare($queryAdoption)) {
                 // Bind parameters: pet_id (i), username (s), pet_name (s), pet_age (i), pet_breed (s), pet_info (s), pet_image (s)
-                $stmtAdoption->bind_param("ississs", $petId, $owner, $petName, $petAge, $petBreed, $petInfo, $petImage);
+                $stmtAdoption->bind_param("isssisss", $petId, $owner, $mail, $petName, $petAge, $petBreed, $petInfo, $petImage);
                 $stmtAdoption->execute();
                 $stmtAdoption->close();
             } else {
@@ -186,35 +188,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
         <h2 class="mb-4 text-center fw-bold text-primary">REGISTERED PET</h2>
         <div class="row g-3">
           <?php
-          $sql = "SELECT * FROM pets ";
-          $result = $conn->query($sql);
+          $sql = "SELECT * FROM pets WHERE user_id = ?";
+          $stmt = $conn->prepare("SELECT * FROM pets WHERE user_id = ?");
+          $stmt->bind_param("i", $userId);
+          $stmt->execute();
+          $result = $stmt->get_result();
+          
           if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-              $imageSrc = !empty($row['pet_image'])
-                ? 'data:image/jpeg;base64,' . htmlspecialchars($row['pet_image'])
-                : 'default.jpg';
-              $qrSrc = !empty($row['qr_code'])
-                ? 'data:image/jpeg;base64,' . htmlspecialchars($row['qr_code'])
-                : 'qr_code.jpg';
-              ?>
-              <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="card h-100" data-id=""
-                  data-pet="<?php echo htmlspecialchars($row['pet_name']); ?>"
-                  data-age="<?php echo htmlspecialchars($row['pet_age']); ?>"
-                  data-breed="<?php echo htmlspecialchars($row['pet_breed']); ?>"
-                  data-info="<?php echo htmlspecialchars($row['pet_info']); ?>"
-                  data-owner="<?php echo htmlspecialchars($row['username']); ?>"
-                  data-image="<?php echo $imageSrc; ?>">
-                  <img src="<?php echo $imageSrc; ?>" class="card-img-top" alt="Pet Image">
-                  <div class="card-body text-center">
-                    <p class="card-text fw-bold"><?php echo htmlspecialchars($row['pet_name']); ?></p>
-                  </div>
-                </div>
+              while ($row = $result->fetch_assoc()) {
+                  $imageSrc = !empty($row['pet_image'])
+                    ? 'data:image/jpeg;base64,' . htmlspecialchars($row['pet_image'])
+                    : 'default.jpg';
+                  $qrSrc = !empty($row['qr_code'])
+                    ? 'data:image/jpeg;base64,' . htmlspecialchars($row['qr_code'])
+                    : 'qr_code.jpg';
+          ?>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card h-100" 
+                 data-id="<?php echo $row['id']; ?>"
+                 data-pet="<?php echo htmlspecialchars($row['pet_name']); ?>"
+                 data-age="<?php echo htmlspecialchars($row['pet_age']); ?>"
+                 data-breed="<?php echo htmlspecialchars($row['pet_breed']); ?>"
+                 data-info="<?php echo htmlspecialchars($row['pet_info']); ?>"
+                 data-owner="<?php echo htmlspecialchars($row['username']); ?>"
+                 data-mail="<?php echo htmlspecialchars($row['mail']); ?>"
+                 data-image="<?php echo $imageSrc; ?>">
+              <img src="<?php echo $imageSrc; ?>" class="card-img-top" alt="Pet Image">
+              <div class="card-body text-center">
+                <p class="card-text fw-bold"><?php echo htmlspecialchars($row['pet_name']); ?></p>
               </div>
-              <?php
-            }
+            </div>
+          </div>
+          <?php
+              }
           } else {
-            echo '<div class="col-12"><p class="text-center">No adoption listing available.</p></div>';
+              echo '<div class="col-12"><p class="text-center">No adoption listing available.</p></div>';
           }
           ?>
         </div>
@@ -234,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
           <div class="row g-3">
             <div class="col-12 col-md-6 text-center">
               <img id="modalPetImage" src="" alt="Pet Image" class="img-fluid rounded border"
-                style="cursor:pointer;" onclick="openFullSize(this)">
+                   style="cursor:pointer;" onclick="openFullSize(this)">
             </div>
             <div class="col-12 col-md-6">
               <div class="row">
@@ -264,8 +272,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
                 </tr>
               </thead>
               <tbody id="vaccineTableBody" class="text-center">
-                <!-- Vaccine records will be loaded dynamically via AJAX -->
-                <tr><td colspan="4">Loading vaccine records...</td></tr>
+                <!-- Empty: Records will be loaded via AJAX -->
+                <tr><td colspan="4">No vaccines recorded.</td></tr>
               </tbody>
             </table>
           </div>
@@ -279,6 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
               <input type="hidden" name="petBreed" id="formPetBreed">
               <input type="hidden" name="petInfo" id="formPetInfo">
               <input type="hidden" name="petImage" id="formPetImage">
+              <!-- Hidden fields for vaccine info -->
               <input type="hidden" name="petVaccine" id="formPetVaccine">
               <input type="hidden" name="vaccineType" id="formVaccineType">
               <input type="hidden" name="vaccineName" id="formVaccineName">
@@ -404,16 +413,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
       var errorModal = new bootstrap.Modal(errorModalEl);
       var successModal = new bootstrap.Modal(successModalEl);
 
+      // When a card is clicked, load its details and fetch vaccine records
       document.querySelectorAll('.card').forEach(function (card) {
         card.addEventListener('click', function () {
           var petId = card.getAttribute('data-id');
           var owner = card.getAttribute('data-owner');
-          var mail = card.getAttribute('data-mail');
           var petName = card.getAttribute('data-pet');
           var petAge = card.getAttribute('data-age');
           var petBreed = card.getAttribute('data-breed');
           var petInfo = card.getAttribute('data-info');
           var petImage = card.getAttribute('data-image');
+          var mail = card.getAttribute('data-mail'); // You can set this if available
 
           document.getElementById('modalPetImage').src = petImage;
           document.getElementById('modalPetName').textContent = petName;
@@ -428,7 +438,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
           document.getElementById('formPetAge').value = petAge;
           document.getElementById('formPetBreed').value = petBreed;
           document.getElementById('formPetInfo').value = petInfo;
-          document.getElementById('formMail').value = mail;
           document.getElementById('formPetImage').value = petImage;
 
           loadVaccineRecords(petId);
@@ -437,6 +446,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
         });
       });
 
+      // When clicking the Update Vaccine button inside the pet modal
       document.getElementById('updateVaccineBtn').addEventListener('click', function () {
         petModal.hide();
         var petId = document.getElementById('formPetId').value;
@@ -444,6 +454,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
         updateVaccineModal.show();
       });
 
+      // AJAX for update vaccine form submission
       var vaccineForm = document.getElementById('vaccineForm');
       vaccineForm.addEventListener('submit', function (event) {
         event.preventDefault();
@@ -471,12 +482,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
           });
       });
 
+      // Show error/success modals if PHP messages are set
       var phpErrorMsg = "<?php echo addslashes($errorMessage); ?>";
       var phpSuccessMsg = "<?php echo addslashes($successMessage); ?>";
       if (phpErrorMsg) { errorModal.show(); }
       if (phpSuccessMsg) { successModal.show(); }
     });
 
+    // Function to load vaccine records using the pet ID via AJAX
     function loadVaccineRecords(petId) {
       fetch('fetch_vaccine.php?pet_id=' + petId)
         .then(response => response.json())
@@ -493,6 +506,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['petId'])) {
               </tr>`;
               tableBody.innerHTML += row;
             });
+            // Optionally, fill hidden form fields with the first record details
             document.getElementById('formVaccineType').value = data[0].vaccine_type;
             document.getElementById('formVaccineName').value = data[0].vaccine_name;
             document.getElementById('formVaccineDate').value = data[0].vaccine_date;

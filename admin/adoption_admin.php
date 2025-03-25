@@ -137,8 +137,8 @@ checkAccess('admin');
 
                                     echo "<tr>
                                         <td>{$index}</td>
-                                        <td>{$row['owner']}</td>
-                                        <td>{$row['email']}</td>
+                                        <td>{$row['username']}</td>
+                                        <td>{$row['mail']}</td>
                                         <td>{$row['pet_name']}</td>
                                         <td>{$row['pet_age']}</td>
                                         <td>{$row['pet_breed']}</td>
