@@ -143,8 +143,7 @@ checkAccess('user');
                         <div class="row">
                             <!-- Owner Info as hidden fields -->
                             <input type="hidden" name="userid" value="<?php echo htmlspecialchars($_SESSION['user_id']); ?>">
-                        <input type="hidden" name="username" value="<?php echo htmlspecialchars($_SESSION['username']); ?>">
-                        <input type="hidden" name="email" value="<?php echo isset($_SESSION['mail']) ? htmlspecialchars($_SESSION['mail']) : ''; ?>">
+                        <input type="hidden" name="username" value="<?php echo isset($_SESSION['usernaname']) ? htmlspecialchars($_SESSION['username']): ''; ?>">
                             <div class="col-md-12 form-group">
                                 <label class="form-label">Name</label>
                                 <input type="text" name="pet_name" class="form-control">

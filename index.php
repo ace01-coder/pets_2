@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // If no errors, proceed to account check
     if (empty($error)) {
         // Check if the account exists
-        $stmt = $conn->prepare('SELECT id, username, pwd, role FROM users WHERE username=? OR email=?');
+        $stmt = $conn->prepare('SELECT id, username, pwd, role FROM users WHERE username=? OR mail=?');
         $stmt->bind_param('ss', $umail, $umail);
         $stmt->execute();
         $stmt->store_result();

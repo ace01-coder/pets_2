@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 include('./dbconn/config.php');
 include('./dbconn/authentication.php');
 checkAccess('user');
@@ -9,10 +9,11 @@ $user_id = $_SESSION['user_id'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve owner info directly from the session
+
+    $sql = "SELECT id, user_id, mail FROM users";
     $user_id  = $_SESSION['user_id'];
     $username = $_SESSION['username'];
     // Get the email from the POST data (or from the session if stored there)
-    $email = htmlspecialchars(trim($_POST['email']));
 
     // Get the rest of the pet data from the POST array
     $pet_name       = trim($_POST['pet_name']);
@@ -48,15 +49,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insert the pet record into the database.
     // Note the order of fields in the INSERT statement must match the order in bind_param:
     // user_id, username, mail, pet_name, pet_age, pet_type, pet_breed, pet_info, pet_image, vaccine_status
-    $insert_sql = "INSERT INTO pets (user_id, username, mail, pet_name, pet_age, pet_type, pet_breed, pet_info, pet_image, vaccine_status) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $insert_sql = "INSERT INTO pets (user_id, username, pet_name, pet_age, pet_type, pet_breed, pet_info, pet_image, vaccine_status) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_sql);
     if (!$stmt) {
         header('Location: register.php?error=Prepare error: ' . $conn->error);
         exit();
     }
     // Bind parameters. Notice $email is now the third parameter.
-    $stmt->bind_param("isssisssss", $user_id, $username, $email, $pet_name, $pet_age, $pet_type, $pet_breed, $pet_info, $imageData, $vaccine_status);
+    $stmt->bind_param("ississsss", $user_id, $username, $pet_name, $pet_age, $pet_type, $pet_breed, $pet_info, $imageData, $vaccine_status);
 
     if ($stmt->execute()) {
         $pet_id = $conn->insert_id;

@@ -3228,7 +3228,7 @@ input[type="button"].btn-block {
 
 .card-body {
   flex: 1  auto;
-  min-height: 120px;
+  min-height: 50px;
   padding: 1.25rem; 
   background-color: white ;
   
@@ -11910,7 +11910,7 @@ body.dark-mode .box-wrapper{
 #profile-picture-editor-zoom-in, #profile-picture-editor-zoom-out, #profile-picture-editor-rotate-left, #profile-picture-editor-rotate-right {
   margin-right: 10px;
 }
--
+
 
 
 

@@ -52,8 +52,11 @@ include('./dbconn/authentication.php');
 
         <div class="row justify-content-center">
             <?php
-            $sql = "SELECT * FROM adoption WHERE approved = 1 ORDER BY created_at DESC";
-            $result = $conn->query($sql);
+            $sql = "SELECT * FROM adoption WHERE approved = 1 AND username != ? ORDER BY created_at DESC";
+            if ($stmt = $conn->prepare($sql)) {
+                $stmt->bind_param("s", $username);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
@@ -82,6 +85,7 @@ include('./dbconn/authentication.php');
                 echo "<div class='col-12 text-center'><p class='text-danger fw-bold'>No adoption listings available.</p></div>";
             }
             $conn->close();
+        }
             ?>
         </div>
     </div>

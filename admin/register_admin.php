@@ -159,9 +159,6 @@ checkAccess('admin');
                                         <tr>
                                             <th>No.</th>
                                             <th>Name</th>
-                                            <th>Phone</th>
-                                            <th>Email</th>
-                                            <th>Address</th>
                                             <th>Pet</th>
                                             <th>Age</th>
                                             <th>Breed</th>
@@ -197,9 +194,6 @@ checkAccess('admin');
                                                 echo "<tr>
                                                         <td>{$index}</td>
                                                         <td>{$row['username']}</td>
-                                                        <td>{$row['phone']}</td>
-                                                        <td>{$row['mail']}</td>
-                                                        <td>{$row['address']}</td>
                                                         <td>{$row['pet_name']}</td>
                                                         <td>{$row['pet_age']}</td>
                                                         <td>{$row['pet_breed']}</td>
